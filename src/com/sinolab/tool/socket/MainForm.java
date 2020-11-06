@@ -1,11 +1,17 @@
 package com.sinolab.tool.socket;
 
-import com.sinolab.tool.socket.client.Client;
+import com.sinolab.tool.socket.channel.Client;
+import com.sinolab.tool.socket.channel.Message;
+import com.sinolab.tool.socket.channel.SendAndReceiveAbstractObject;
+import com.sinolab.tool.socket.channel.Server;
+import com.sinolab.tool.socket.listener.MessageListener;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.LogManager;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +30,8 @@ public class MainForm implements MessageListener {
     private JButton sendButton;
     private JTextArea sendTextArea;
     private JScrollPane receiveScroll;
+    private JTabbedPane tabbedPane1;
+    private JTable table1;
 
     private SendAndReceiveAbstractObject channel = null;
 
@@ -90,7 +98,11 @@ public class MainForm implements MessageListener {
 
     @Override
     public void onReceive(Message message) {
-        receiveArea.append(message.toString());
+        // 在每条消息前添加日期时间
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+        Date date = new Date(System.currentTimeMillis());
+        String timeStr = simpleDateFormat.format(date);
+        receiveArea.append(timeStr + " "+ message.toString());
         receiveArea.append("\n");
         receiveScroll.getVerticalScrollBar().setValue(receiveScroll.getVerticalScrollBar().getMaximum());
     }

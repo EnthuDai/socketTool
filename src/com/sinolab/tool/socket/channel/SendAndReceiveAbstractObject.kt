@@ -1,5 +1,7 @@
-package com.sinolab.tool.socket
+package com.sinolab.tool.socket.channel
 
+import com.sinolab.tool.socket.Hex
+import com.sinolab.tool.socket.listener.MessageListener
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
@@ -36,9 +38,9 @@ abstract class SendAndReceiveAbstractObject {
             outputStream?.flush()
         }else{
             if(socket == null){
-                logger.warning("无法发送 ${Hex.bytesToHexString(byteArray," ",false)}，原因：socket连接未建立！")
+                logger.warning("无法发送 ${Hex.bytesToHexString(byteArray, " ", false)}，原因：socket连接未建立！")
             }else{
-                logger.warning("无法发送 ${Hex.bytesToHexString(byteArray," ",false)}，原因：socket连接已关闭！")
+                logger.warning("无法发送 ${Hex.bytesToHexString(byteArray, " ", false)}，原因：socket连接已关闭！")
             }
 
         }

@@ -1,8 +1,8 @@
-package com.sinolab.tool.socket
+package com.sinolab.tool.socket.channel
 
+import com.sinolab.tool.socket.listener.MessageListener
 import java.io.IOException
 import java.net.ServerSocket
-import kotlin.concurrent.thread
 
 class Server(form: MessageListener): SendAndReceiveAbstractObject(form) {
 

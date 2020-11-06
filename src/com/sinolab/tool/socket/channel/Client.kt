@@ -1,9 +1,7 @@
-package com.sinolab.tool.socket.client
+package com.sinolab.tool.socket.channel
 
-import com.sinolab.tool.socket.AlertException
-import com.sinolab.tool.socket.Message
-import com.sinolab.tool.socket.MessageListener
-import com.sinolab.tool.socket.SendAndReceiveAbstractObject
+import com.sinolab.tool.socket.exception.AlertException
+import com.sinolab.tool.socket.listener.MessageListener
 import java.net.Socket
 import java.util.logging.Logger
 
