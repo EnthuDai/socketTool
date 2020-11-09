@@ -7,11 +7,12 @@ import com.sinolab.tool.socket.channel.Server;
 import com.sinolab.tool.socket.listener.MessageListener;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,17 +31,17 @@ public class MainForm implements MessageListener {
     private JButton sendButton;
     private JTextArea sendTextArea;
     private JScrollPane receiveScroll;
-    private JTabbedPane tabbedPane1;
-    private JTable table1;
+    private JTabbedPane collectionTab;
+
 
     private SendAndReceiveAbstractObject channel = null;
 
 
 
 
-    public MainForm() {
+    public MainForm(Config config) {
         MainForm me = this;
-
+        renderTabTable(config);
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,4 +115,36 @@ public class MainForm implements MessageListener {
     private void alert(String text){
         JOptionPane.showMessageDialog(null, text);
     }
+
+    private void renderTabTable(Config config){
+        if(config!=null){
+            List<TabConfig> tabs = config.getInstructionTab();
+            for(TabConfig tab : tabs){
+                JTable table = new JTable(tab.toArray(), new String[]{"序号","名称"}){
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }//表格不允许被编辑
+                };
+                table.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if(e.getClickCount() == 2){
+                            int row =((JTable)e.getSource()).rowAtPoint(e.getPoint()); //获得行位置
+                            logger.info("双击了行：" + row);
+                            sendTextArea.setText(tab.getRows().get(row).getSampleInstruction());
+                        }
+                    }
+                });
+                JScrollPane scrollPane = new JScrollPane(table);
+                table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);   //单选
+                table.setRowHeight(20);
+                scrollPane.setViewportView(table);   //支持滚动
+
+                collectionTab.add(tab.getTitle(),scrollPane);
+            }
+        }
+    }
+
+
+
 }
