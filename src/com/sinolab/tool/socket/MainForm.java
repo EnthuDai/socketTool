@@ -7,10 +7,12 @@ import com.sinolab.tool.socket.channel.Server;
 import com.sinolab.tool.socket.listener.MessageListener;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,11 +38,20 @@ public class MainForm implements MessageListener {
 
     private SendAndReceiveAbstractObject channel = null;
 
+    /**
+     * tab页中的表格
+     */
+    private List<JTable> instructionCollectionTables;
+    private List<DefaultTableModel> instructionCollectionTableModels;
+
+    private Config config = null;
+
 
 
 
     public MainForm(Config config) {
         MainForm me = this;
+        this.config = config;
         renderTabTable(config);
         startButton.addActionListener(new ActionListener() {
             @Override
@@ -116,15 +127,27 @@ public class MainForm implements MessageListener {
         JOptionPane.showMessageDialog(null, text);
     }
 
+    /**
+     * 渲染表格
+     * @param config
+     */
     private void renderTabTable(Config config){
         if(config!=null){
+            instructionCollectionTables = new ArrayList<>(config.getInstructionTab().size());
+            instructionCollectionTableModels = new ArrayList<>(config.getInstructionTab().size());
             List<TabConfig> tabs = config.getInstructionTab();
             for(TabConfig tab : tabs){
-                JTable table = new JTable(tab.toArray(), new String[]{"序号","名称"}){
+                DefaultTableModel tableModel = new DefaultTableModel(tab.toArray(), new String[]{"序号", "名称"});
+                JTable table = new JTable(tableModel) {
                     public boolean isCellEditable(int row, int column) {
                         return false;
                     }//表格不允许被编辑
                 };
+//                JTable table = new JTable(tab.toArray(), new String[]{"序号","名称"}){
+//                    public boolean isCellEditable(int row, int column) {
+//                        return false;
+//                    }//表格不允许被编辑
+//                };
                 table.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -132,17 +155,43 @@ public class MainForm implements MessageListener {
                             int row =((JTable)e.getSource()).rowAtPoint(e.getPoint()); //获得行位置
                             logger.info("双击了行：" + row);
                             sendTextArea.setText(tab.getRows().get(row).getSampleInstruction());
+                        }else if(e.getButton() == MouseEvent.BUTTON3){
+                            // 显示右击菜单
+                            table.setRowSelectionInterval(table.rowAtPoint(e.getPoint()), table.rowAtPoint(e.getPoint()));
+                            createTableRowMenu(e, table, instructionCollectionTableModels.get(collectionTab.getSelectedIndex()), table.rowAtPoint(e.getPoint()));
                         }
                     }
                 });
                 JScrollPane scrollPane = new JScrollPane(table);
                 table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);   //单选
                 table.setRowHeight(20);
+                instructionCollectionTables.add(table);
+                instructionCollectionTableModels.add(tableModel);
                 scrollPane.setViewportView(table);   //支持滚动
 
                 collectionTab.add(tab.getTitle(),scrollPane);
             }
         }
+    }
+
+    /**
+     * 创建表格行右击菜单
+     * @param event
+     */
+    private void createTableRowMenu(MouseEvent event,JTable table, DefaultTableModel model, int rowIndex){
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem editMenu = new JMenuItem("修改");
+        JMenuItem deleteMenu = new JMenuItem("删除");
+        deleteMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                config.getInstructionTab().get(collectionTab.getSelectedIndex()).getRows().remove(rowIndex);
+                model.removeRow(rowIndex);
+            }
+        });
+        menu.add(editMenu);
+        menu.add(deleteMenu);
+        menu.show(event.getComponent(),event.getX(),event.getY());
     }
 
 
