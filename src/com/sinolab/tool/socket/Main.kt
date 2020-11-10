@@ -33,7 +33,7 @@ object Main {
             logger.warning("未在同目录下找到名为config.json的配置文件！")
             logger.warning("当前目录为: " + file.absolutePath)
         }
-        frame.contentPane = MainForm(config).panel1
+        frame.contentPane = MainForm(frame,config).panel1
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         frame.pack()
         frame.isVisible = true

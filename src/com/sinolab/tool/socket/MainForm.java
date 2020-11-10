@@ -45,12 +45,13 @@ public class MainForm implements MessageListener {
     private List<DefaultTableModel> instructionCollectionTableModels;
 
     private Config config = null;
+    private JFrame frame;
 
 
 
-
-    public MainForm(Config config) {
+    public MainForm(JFrame frame,Config config) {
         MainForm me = this;
+        this.frame = frame;
         this.config = config;
         renderTabTable(config);
         startButton.addActionListener(new ActionListener() {
@@ -180,15 +181,25 @@ public class MainForm implements MessageListener {
      */
     private void createTableRowMenu(MouseEvent event,JTable table, DefaultTableModel model, int rowIndex){
         JPopupMenu menu = new JPopupMenu();
+        JMenuItem addMenu = new JMenuItem("新增");
         JMenuItem editMenu = new JMenuItem("修改");
         JMenuItem deleteMenu = new JMenuItem("删除");
-        deleteMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                config.getInstructionTab().get(collectionTab.getSelectedIndex()).getRows().remove(rowIndex);
-                model.removeRow(rowIndex);
-            }
+        deleteMenu.addActionListener(e -> {
+            config.getInstructionTab().get(collectionTab.getSelectedIndex()).getRows().remove(rowIndex);
+            model.removeRow(rowIndex);
+            config.syncToFile();
         });
+        addMenu.addActionListener(e -> {
+            JDialog dialog = new JDialog();
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setModal(true);
+            dialog.add(new InstructionWin().panel, BorderLayout.CENTER);
+            dialog.setTitle("添加命令");
+            dialog.pack();
+            dialog.setLocationRelativeTo(frame);
+            dialog.setVisible(true);
+        });
+        menu.add(addMenu);
         menu.add(editMenu);
         menu.add(deleteMenu);
         menu.show(event.getComponent(),event.getX(),event.getY());
