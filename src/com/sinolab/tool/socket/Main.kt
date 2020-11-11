@@ -10,6 +10,8 @@ import javax.swing.UnsupportedLookAndFeelException
 
 object Main {
     @JvmStatic
+    var config:Config? = null
+    @JvmStatic
     fun main(args: Array<String>) {
         val logger = Logger.getLogger("main")
         val frame = JFrame("SOCKET调试工具")
@@ -24,7 +26,7 @@ object Main {
         } catch (e: UnsupportedLookAndFeelException) {
             e.printStackTrace()
         }
-        var config:Config? = null
+
         val file = File("config.json")
         if (file.exists()) {
             logger.info("找到配置文件，文件路径：" + file.absolutePath)

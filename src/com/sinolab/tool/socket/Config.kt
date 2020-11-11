@@ -39,4 +39,9 @@ class TabConfig{
 class RowConfig{
     var name:String = ""
     var sampleInstruction = ""
+    var expectedResponse = ""
+
+    fun toArray():Array<String>{
+        return arrayOf(name, sampleInstruction, expectedResponse)
+    }
 }

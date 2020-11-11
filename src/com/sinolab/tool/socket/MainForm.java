@@ -39,7 +39,7 @@ public class MainForm implements MessageListener {
     private SendAndReceiveAbstractObject channel = null;
 
     /**
-     * tab页中的表格
+     * tab页中的表格 和 对应的数据
      */
     private List<JTable> instructionCollectionTables;
     private List<DefaultTableModel> instructionCollectionTableModels;
@@ -193,8 +193,18 @@ public class MainForm implements MessageListener {
             JDialog dialog = new JDialog();
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setModal(true);
-            dialog.add(new InstructionWin().panel, BorderLayout.CENTER);
+            dialog.add(new InstructionWin(dialog,model,config.getInstructionTab().get(collectionTab.getSelectedIndex()), null).panel, BorderLayout.CENTER);
             dialog.setTitle("添加命令");
+            dialog.pack();
+            dialog.setLocationRelativeTo(frame);
+            dialog.setVisible(true);
+        });
+        editMenu.addActionListener(e -> {
+            JDialog dialog = new JDialog();
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setModal(true);
+            dialog.add(new InstructionWin(dialog,model,config.getInstructionTab().get(collectionTab.getSelectedIndex()), rowIndex).panel, BorderLayout.CENTER);
+            dialog.setTitle("修改命令");
             dialog.pack();
             dialog.setLocationRelativeTo(frame);
             dialog.setVisible(true);

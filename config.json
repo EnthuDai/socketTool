@@ -1,27 +1,56 @@
 {
   "doc": "此文件为界面数据及配置文件。以下后缀为Desc的变量都为注释字段",
-
   "instructionTabDesc": "预设命令的tab页配置",
   "instructionTab": [
     {
       "title": "设备一",
-      "rows": [{
-        "name": "1、登录命令",
-        "sampleInstruction": "71 56 00 FF FF FF FF FF FF"
-      },{
-        "name": "2、退出命令",
-        "sampleInstruction": "71 56 00 00 00 00 00 00 00"
-      }]
+      "rows": [
+        {
+          "name": "1、登录命令",
+          "sampleInstruction": "71 56 00 FF FF FF FF FF FF",
+          "expectedResponse": ""
+        },
+        {
+          "name": "2、退出命令",
+          "sampleInstruction": "71 56 00 00 00 00 00 00 00",
+          "expectedResponse": ""
+        },
+        {
+          "name": "ceshi",
+          "sampleInstruction": "1122",
+          "expectedResponse": "1122"
+        },
+        {
+          "name": "ceshi1",
+          "sampleInstruction": "11",
+          "expectedResponse": "11"
+        }
+      ]
     },
     {
       "title": "设备二",
-      "rows": [{
-        "name": "1、登录命令",
-        "sampleInstruction": "71 56 00 FF FF FF FF FF FF"
-      },{
-        "name": "2、退出命令",
-        "sampleInstruction": "71 56 00 00 00 00 00 00 00"
-      }]
+      "rows": [
+        {
+          "name": "1、登录命令",
+          "sampleInstruction": "71 56 00 FF FF FF FF FF FF",
+          "expectedResponse": ""
+        },
+        {
+          "name": "2、退出命令",
+          "sampleInstruction": "71 56 00 00 00 00 00 00 00",
+          "expectedResponse": ""
+        },
+        {
+          "name": "ce",
+          "sampleInstruction": "22",
+          "expectedResponse": "22"
+        },
+        {
+          "name": "ce",
+          "sampleInstruction": "22",
+          "expectedResponse": "22"
+        }
+      ]
     }
   ]
 }
