@@ -1,18 +1,24 @@
 package com.sinolab.tool.socket;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class InstructionWin {
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
     private JTextField nameField;
     private JTextArea instructionArea;
     private JTextArea expectedInstructionArea;
     private JButton saveButton;
     public JPanel panel;
+    private JTextArea sampleArea;
     private DefaultTableModel model;
     private TabConfig tabConfig;
     private Integer rowIndex;
@@ -43,6 +49,25 @@ public class InstructionWin {
                 Main.getConfig().syncToFile(); // 将信息同步至配置文件
             }
         });
+        expectedInstructionArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String text = expectedInstructionArea.getText();
+                logger.info("预期返回内容改变为：" + text);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = expectedInstructionArea.getText();
+                logger.info("预期返回内容改变为：" + text);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                String text = expectedInstructionArea.getText();
+                logger.info("预期返回内容改变为：" + text);
+            }
+        });
     }
 
     /**
@@ -58,8 +83,6 @@ public class InstructionWin {
         this.dialog = dialog;
         if(rowIndex!=null){
             // 这里写的不好，耦合度太高了
-
-
             nameField.setText(config.getRows().get(rowIndex).getName());
             instructionArea.setText(config.getRows().get(rowIndex).getSampleInstruction());
             expectedInstructionArea.setText(config.getRows().get(rowIndex).getExpectedResponse());
