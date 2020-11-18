@@ -5,6 +5,7 @@ import com.sinolab.tool.socket.exception.UnSupportOperatorException
 import java.lang.StringBuilder
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.exp
 import kotlin.test.assertTrue
 
 /**
@@ -27,6 +28,7 @@ import kotlin.test.assertTrue
  * 5、并集符：||，代表运算符左右两侧数据均为预期有效值
  * 6、优先级：() > &、| > +、- > ||；相同优先级，运算顺序为自左向右
  * 7、通配符：*、**，均代表一个任意字节
+ * 8、区间符：[a,b] a、b均为16字节字符串，表示a、a+1...b-1、b，等价于（a||a+1...b-1||b）
  *
  * 注意：
  * 按照普遍的按位与或计算法则，对于连续的不加括号的按位与或运算，似乎都只计算第一个与或运算（windows自带计算机、python脚本），
@@ -136,6 +138,35 @@ class RuleParser {
     }
 
     /**
+     * 将字符串中的[a,b]等价替换为（a||a+1||a+2...b-1||b）
+     */
+    fun replaceIntervalOperator(expression: String):String{
+        var index = 0
+        val result = StringBuilder()
+        while (index<expression.length){
+            if(expression[index] == '['){
+                result.append("(")
+                val endIndex = handlePairChar(expression, index, '[', ']')
+                val numberPair = expression.substring(index + 1, endIndex).split(",")
+                if(numberPair.size !=2){
+                    throw ErrorExpression("[" + expression.substring(index + 1, endIndex) +"]")
+                }else{
+                    for(num in Hex2.hexStringToUByte(numberPair[0]) until Hex2.hexStringToUByte(numberPair[1])){
+                        result.append(Hex2.ubyteToHexString(num.toUByte()))
+                        result.append("||")
+                    }
+                    result.append(numberPair[1])
+                }
+                index = endIndex + 1
+            }else{
+                result.append(expression[index])
+                index += 1
+            }
+        }
+        return result.toString()
+    }
+
+    /**
      *  由${n}获取n
      */
     private fun getIndex(string:String):Int{
@@ -160,24 +191,48 @@ class RuleParser {
     }
 
     /**
-     * 输入一个带括号的任意表达式，输入左括号的下标，输出与之对应的右括号坐标
+     * 输入“（”的下标，返回与之匹配的“）”的下标
      * @param expression 表达式
      * @param beginIndex 左括号在表达式中的下标
      * @return 对应右括号的下标
      */
-    fun handleBracket(expression: String,beginIndex: Int):Int{
+    private fun handleBracket(expression: String,beginIndex: Int):Int{
+        return handlePairChar(expression, beginIndex, '(', ')')
+//        var endIndex = beginIndex + 1
+//        val bracketStack = Stack<Char>();           // 括号栈
+//        bracketStack.push('(')
+//        while (endIndex < expression.length && bracketStack.isNotEmpty()){
+//            if(expression[endIndex] == '(') bracketStack.push('(')
+//            if(expression[endIndex] == ')') bracketStack.pop()
+//            endIndex++
+//        }
+//        if(bracketStack.isEmpty()){
+//            return endIndex-1
+//        }else{
+//            throw ErrorExpression("$expression，括号不匹配！")
+//        }
+    }
+
+    /**
+     * 选择匹配字符对，例如寻找左括号对应的右括号
+     * @param expression 所在字符串
+     * @param beginIndex 需要配对的left字符所在的下标
+     * @param left 字符串对的左边字符
+     * @param right 字符串对的右字符
+     */
+    private fun handlePairChar(expression: String, beginIndex:Int, left:Char, right:Char):Int{
         var endIndex = beginIndex + 1
         val bracketStack = Stack<Char>();           // 括号栈
-        bracketStack.push('(')
+        bracketStack.push(left)
         while (endIndex < expression.length && bracketStack.isNotEmpty()){
-            if(expression[endIndex] == '(') bracketStack.push('(')
-            if(expression[endIndex] == ')') bracketStack.pop()
+            if(expression[endIndex] == left) bracketStack.push(left)
+            if(expression[endIndex] == right) bracketStack.pop()
             endIndex++
         }
         if(bracketStack.isEmpty()){
             return endIndex-1
         }else{
-            throw ErrorExpression("$expression，括号不匹配！")
+            throw ErrorExpression("$expression，$left 和 $right 不匹配！")
         }
     }
 
