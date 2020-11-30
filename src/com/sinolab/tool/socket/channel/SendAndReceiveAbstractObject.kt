@@ -1,6 +1,6 @@
 package com.sinolab.tool.socket.channel
 
-import com.sinolab.tool.socket.Hex
+import com.sinolab.tool.socket.util.Hex
 import com.sinolab.tool.socket.listener.MessageListener
 import java.io.InputStream
 import java.io.OutputStream

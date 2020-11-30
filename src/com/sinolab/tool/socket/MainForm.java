@@ -5,12 +5,15 @@ import com.sinolab.tool.socket.channel.Message;
 import com.sinolab.tool.socket.channel.SendAndReceiveAbstractObject;
 import com.sinolab.tool.socket.channel.Server;
 import com.sinolab.tool.socket.listener.MessageListener;
+import com.sinolab.tool.socket.util.Hex;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +32,12 @@ public class MainForm implements MessageListener {
     private JComboBox portComboBox;
     private JRadioButton modeRadio;
     private JButton startButton;
-    private JTextArea receiveArea;
+    private JTextPane receiveArea;
     private JButton sendButton;
     private JTextArea sendTextArea;
     private JScrollPane receiveScroll;
     private JTabbedPane collectionTab;
+    private JCheckBox 辅助校验CheckBox;
 
 
     private SendAndReceiveAbstractObject channel = null;
@@ -107,6 +111,12 @@ public class MainForm implements MessageListener {
                 }
             }
         });
+        collectionTab.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+            }
+        });
     }
 
     @Override
@@ -115,8 +125,12 @@ public class MainForm implements MessageListener {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
         Date date = new Date(System.currentTimeMillis());
         String timeStr = simpleDateFormat.format(date);
-        receiveArea.append(timeStr + " "+ message.toString());
-        receiveArea.append("\n");
+        Document document = receiveArea.getDocument();
+        try {
+            document.insertString(document.getLength(),timeStr + "  "+ message.toString() + "\n",new SimpleAttributeSet());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
         receiveScroll.getVerticalScrollBar().setValue(receiveScroll.getVerticalScrollBar().getMaximum());
     }
 
@@ -155,11 +169,20 @@ public class MainForm implements MessageListener {
                         if(e.getClickCount() == 2){
                             int row =((JTable)e.getSource()).rowAtPoint(e.getPoint()); //获得行位置
                             logger.info("双击了行：" + row);
-                            sendTextArea.setText(tab.getRows().get(row).getSampleInstruction());
+                            sendTextArea.setText(tab.getRows().get(row).getRequestSample());
                         }else if(e.getButton() == MouseEvent.BUTTON3){
                             // 显示右击菜单
                             table.setRowSelectionInterval(table.rowAtPoint(e.getPoint()), table.rowAtPoint(e.getPoint()));
                             createTableRowMenu(e, table, instructionCollectionTableModels.get(collectionTab.getSelectedIndex()), table.rowAtPoint(e.getPoint()));
+                        }
+                    }
+                });
+                // 右击表格表头时现实右键菜单，修改和删除需要置为不可选
+                table.getTableHeader().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if(e.getButton() == MouseEvent.BUTTON3){
+                            createTableRowMenu(e, table, instructionCollectionTableModels.get(collectionTab.getSelectedIndex()),-1);
                         }
                     }
                 });
@@ -178,17 +201,11 @@ public class MainForm implements MessageListener {
     /**
      * 创建表格行右击菜单
      * @param event
+     * @return
      */
-    private void createTableRowMenu(MouseEvent event,JTable table, DefaultTableModel model, int rowIndex){
+    private JPopupMenu createTableRowMenu(MouseEvent event, JTable table, DefaultTableModel model, Integer rowIndex){
         JPopupMenu menu = new JPopupMenu();
         JMenuItem addMenu = new JMenuItem("新增");
-        JMenuItem editMenu = new JMenuItem("修改");
-        JMenuItem deleteMenu = new JMenuItem("删除");
-        deleteMenu.addActionListener(e -> {
-            config.getInstructionTab().get(collectionTab.getSelectedIndex()).getRows().remove(rowIndex);
-            model.removeRow(rowIndex);
-            config.syncToFile();
-        });
         addMenu.addActionListener(e -> {
             JDialog dialog = new JDialog();
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -199,20 +216,30 @@ public class MainForm implements MessageListener {
             dialog.setLocationRelativeTo(frame);
             dialog.setVisible(true);
         });
-        editMenu.addActionListener(e -> {
-            JDialog dialog = new JDialog();
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.setModal(true);
-            dialog.add(new InstructionWin(dialog,model,config.getInstructionTab().get(collectionTab.getSelectedIndex()), rowIndex).panel, BorderLayout.CENTER);
-            dialog.setTitle("修改命令");
-            dialog.pack();
-            dialog.setLocationRelativeTo(frame);
-            dialog.setVisible(true);
-        });
         menu.add(addMenu);
-        menu.add(editMenu);
-        menu.add(deleteMenu);
+        if(rowIndex >= 0){
+            JMenuItem editMenu = new JMenuItem("修改");
+            JMenuItem deleteMenu = new JMenuItem("删除");
+            deleteMenu.addActionListener(e -> {
+                config.getInstructionTab().get(collectionTab.getSelectedIndex()).getRows().remove(rowIndex);
+                model.removeRow(rowIndex);
+                config.syncToFile();
+            });
+            editMenu.addActionListener(e -> {
+                JDialog dialog = new JDialog();
+                dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                dialog.setModal(true);
+                dialog.add(new InstructionWin(dialog,model,config.getInstructionTab().get(collectionTab.getSelectedIndex()), rowIndex).panel, BorderLayout.CENTER);
+                dialog.setTitle("修改命令");
+                dialog.pack();
+                dialog.setLocationRelativeTo(frame);
+                dialog.setVisible(true);
+            });
+            menu.add(editMenu);
+            menu.add(deleteMenu);
+        }
         menu.show(event.getComponent(),event.getX(),event.getY());
+        return menu;
     }
 
 

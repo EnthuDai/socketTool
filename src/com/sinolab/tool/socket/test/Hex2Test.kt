@@ -1,6 +1,6 @@
 package com.sinolab.tool.socket.test
 
-import com.sinolab.tool.socket.Hex2
+import com.sinolab.tool.socket.util.Hex2
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

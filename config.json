@@ -6,24 +6,10 @@
       "title": "设备一",
       "rows": [
         {
-          "name": "1、登录命令",
-          "sampleInstruction": "71 56 00 FF FF FF FF FF FF",
-          "expectedResponse": ""
-        },
-        {
-          "name": "2、退出命令",
-          "sampleInstruction": "71 56 00 00 00 00 00 00 00",
-          "expectedResponse": ""
-        },
-        {
-          "name": "ceshi",
-          "sampleInstruction": "1122",
-          "expectedResponse": "1122"
-        },
-        {
-          "name": "ceshi1",
-          "sampleInstruction": "11",
-          "expectedResponse": "11"
+          "name": "登录",
+          "requestDefinition": "71 56 53 30 00 00 01 ** ** ** ** ** ** ** ** ** ** ** ** 01 ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** AA",
+          "requestSample": "71 56 53 30 00 00 01 AA BB CC DD EE FF 31 32 33 34 35 36 01 01 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF E8 03 22 AA",
+          "responseDefinition": "71 56 52 30 00 ${5} ${6} ${7} ${8} ${9} ${10} ${11} ${12} ${13} ${14} ${15} ${16} ${17} ${18} ${19}|0xF0 ${20} ${21} ${22} ${23} ${24} ${25} ${26} ${27} ${28} ${29} ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** BB"
         }
       ]
     },
@@ -32,25 +18,33 @@
       "rows": [
         {
           "name": "1、登录命令",
-          "sampleInstruction": "71 56 00 FF FF FF FF FF FF",
-          "expectedResponse": ""
+          "requestDefinition": "",
+          "requestSample": "",
+          "responseDefinition": ""
         },
         {
           "name": "2、退出命令",
-          "sampleInstruction": "71 56 00 00 00 00 00 00 00",
-          "expectedResponse": ""
+          "requestDefinition": "",
+          "requestSample": "",
+          "responseDefinition": ""
         },
         {
           "name": "ce",
-          "sampleInstruction": "22",
-          "expectedResponse": "22"
+          "requestDefinition": "",
+          "requestSample": "",
+          "responseDefinition": ""
         },
         {
           "name": "ce",
-          "sampleInstruction": "22",
-          "expectedResponse": "22"
+          "requestDefinition": "",
+          "requestSample": "",
+          "responseDefinition": ""
         }
       ]
+    },
+    {
+      "title": "设备三",
+      "rows": []
     }
   ]
 }

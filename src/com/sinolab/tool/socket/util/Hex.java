@@ -1,4 +1,4 @@
-package com.sinolab.tool.socket;
+package com.sinolab.tool.socket.util;
 
 import java.nio.charset.Charset;
 import java.util.Calendar;

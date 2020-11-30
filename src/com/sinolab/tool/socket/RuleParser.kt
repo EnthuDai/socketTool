@@ -2,10 +2,11 @@ package com.sinolab.tool.socket
 
 import com.sinolab.tool.socket.exception.ErrorExpression
 import com.sinolab.tool.socket.exception.UnSupportOperatorException
+import com.sinolab.tool.socket.util.Hex
+import com.sinolab.tool.socket.util.Hex2
 import java.lang.StringBuilder
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.math.exp
 import kotlin.test.assertTrue
 
 /**

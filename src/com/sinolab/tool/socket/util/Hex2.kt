@@ -1,4 +1,4 @@
-package com.sinolab.tool.socket
+package com.sinolab.tool.socket.util
 
 
 object Hex2 {
